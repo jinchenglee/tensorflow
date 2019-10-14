@@ -1,5 +1,20 @@
-# TensorFlow Lite for Microcontrollers
 
+## HACKS needed
+This is specific for my set-up. OpenOCD and RISC-V tool chain needs to be copied/installed to below dir:
+
+```
+riscv@debian:~/Documents/lichee_tang/tensorflow/tensorflow/lite/experimental/micro/tools/make/downloads/licheetang_e203_lib/work/build$ pwd
+/home/riscv/Documents/lichee_tang/tensorflow/tensorflow/lite/experimental/micro/tools/make/downloads/licheetang_e203_lib/work/build
+riscv@debian:~/Documents/lichee_tang/tensorflow/tensorflow/lite/experimental/micro/tools/make/downloads/licheetang_e203_lib/work/build$ ls riscv-gnu-toolchain/riscv32-unknown-elf/prefix/
+bin  gnu-mcu-eclipse  include  lib  lib64  README.md  riscv-none-embed  share
+riscv@debian:~/Documents/lichee_tang/tensorflow/tensorflow/lite/experimental/micro/tools/make/downloads/licheetang_e203_lib/work/build$ ls openocd/prefix/bin/flash    libopenocd.la  openocd.c  src_libopenocd_la-hello.lo    svf
+hello.c  main.c         openocd.h  src_libopenocd_la-hello.o     target
+hello.h  main.o         pld        src_libopenocd_la-openocd.lo  transport
+helper   Makefile.am    rtos       src_libopenocd_la-openocd.o   xsvf
+jtag     openocd        server     startup_tcl.inc
+```
+
+# TensorFlow Lite for Microcontrollers
 This an experimental port of TensorFlow Lite aimed at micro controllers and other devices with only kilobytes of memory. It doesn't require any operating system support, any standard C or C++ libraries, or dynamic memory allocation, so it's designed to be portable even to 'bare metal' systems. The core runtime fits in 16KB on a Cortex M3, and with enough operators to run a speech keyword detection model, takes up a total of 22KB.
 
 The design goals are for the framework to be:
@@ -144,4 +159,5 @@ export PATH=${PATH}:riscv64-unknown-elf-gcc-20181030-x86_64-linux-ubuntu14/bin/
  - Checkout out the "riscv_mcu" branch by running `git checkout riscv_mcu`
  - Download the dependencies by running `tensorflow/lite/experimental/micro/tools/make/download_dependencies.sh`. This may take a few minutes
  - Build and test the library with `make -f tensorflow/lite/experimental/micro/tools/make/Makefile TARGET=riscv32_mcu`
+
 

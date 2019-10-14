@@ -20,12 +20,18 @@
 # Second argument is a regular expression that's required to be in the output logs
 # for the test to pass.
 
+# Decleare read-only (-r) variables
 declare -r ROOT_DIR=`pwd`
 declare -r TEST_TMPDIR=/tmp/test_bluepill_binary/
 declare -r MICRO_LOG_PATH=${TEST_TMPDIR}/$1
 declare -r MICRO_LOG_FILENAME=${MICRO_LOG_PATH}/logs.txt
 mkdir -p ${MICRO_LOG_PATH}
 
+# Redirect result 
+# > : where to redirect to.
+# 1 : stdout
+# 2 : stderr
+#  2>&1 means also print stderr info to stdout.
 $1 2>&1 | tee ${MICRO_LOG_FILENAME}
 
 if grep -q "$2" ${MICRO_LOG_FILENAME}

@@ -130,7 +130,8 @@ PREPROCESSOR_FIXED_TEST_OBJS := $(addprefix $(OBJDIR), \
 $(patsubst %.cc,%.o,$(patsubst %.c,%.o,$(PREPROCESSOR_FIXED_TEST_SRCS))))
 
 MICROLITE_LIB_OBJS := $(addprefix $(OBJDIR), \
-$(patsubst %.cc,%.o,$(patsubst %.c,%.o,$(MICROLITE_CC_SRCS))))
+$(patsubst %.cc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(MICROLITE_CC_SRCS)))))
+#<<JC>>$(patsubst %.cc,%.o,$(patsubst %.c,%.o,$(MICROLITE_CC_SRCS))))
 
 MICROLITE_TEST_TARGETS := $(addprefix $(BINDIR), \
 $(patsubst %_test.cc,%.test_target,$(MICROLITE_TEST_SRCS)))
@@ -200,10 +201,10 @@ preprocessor_fixed_test_bin: $(PREPROCESSOR_FIXED_TEST_BINARY).bin
 test_preprocessor_fixed: $(PREPROCESSOR_FIXED_TEST_BINARY)
 	$(TEST_SCRIPT) $(PREPROCESSOR_FIXED_TEST_BINARY) '~~~ALL TESTS PASSED~~~'
 
-$(BINDIR)%_test : $(OBJDIR)%_test.o $(MICROLITE_LIB_PATH)
+$(BINDIR)%_test : $(OBJDIR)%_test.o $(MICROLITE_LIB_OBJS) $(MICROLITE_LIB_PATH)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) \
-	-o $@ $< \
+	-o $@ $< $(MICROLITE_LIB_OBJS) \
 	$(LIBFLAGS) $(MICROLITE_LIB_PATH) $(LDFLAGS) $(MICROLITE_LIBS)
 
 $(BINDIR)%.test_target: $(BINDIR)%_test

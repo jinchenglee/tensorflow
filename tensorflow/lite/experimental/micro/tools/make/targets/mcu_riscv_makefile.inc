@@ -1,7 +1,8 @@
 # Settings for RISCV MCU toolchain.
 ifeq ($(TARGET), riscv32_mcu)
   TARGET_ARCH := riscv32_mcu
-  TARGET_TOOLCHAIN_PREFIX := riscv64-unknown-elf-
+  #<<JC>> TARGET_TOOLCHAIN_PREFIX := riscv64-unknown-elf-
+  TARGET_TOOLCHAIN_PREFIX := riscv-none-embed-
 
   PLATFORM_FLAGS = \
     -march=rv32imac \
@@ -39,22 +40,26 @@ ifeq ($(TARGET), riscv32_mcu)
   BUILD_TYPE := micro
 
   INCLUDES += \
-    -I$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/include \
-    -I$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/drivers/ \
-    -I$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env \
-    -I$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env/freedom-e300-hifive1
+    -I$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/include \
+    -I$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/drivers/ \
+    -I$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env \
+    -I$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee
 
   MICROLITE_CC_SRCS += \
+    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.c) \
+    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.cc) \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/misc/write_hex.c \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/stdlib/malloc.c \
     $(wildcard tensorflow/lite/experimental/micro/riscv32_mcu/*.cc)
 
   MICRO_SPEECH_TEST_SRCS += \
-    $(wildcard $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/libwrap/sys/*.c) \
-    $(wildcard $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/libwrap/sys/*.cc) \
-    $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/libwrap/misc/write_hex.c \
-    $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/libwrap/stdlib/malloc.c \
-    $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env/start.S \
-    $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env/entry.S \
-    $(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env/freedom-e300-hifive1/init.c
+    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.c) \
+    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.cc) \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/misc/write_hex.c \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/stdlib/malloc.c \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/start.S \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/entry.S \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee/init.c
 
   LIBWRAP_SYMS := malloc free \
 	open lseek read write fstat stat close link unlink \
@@ -65,9 +70,9 @@ ifeq ($(TARGET), riscv32_mcu)
   LDFLAGS += $(foreach s,$(LIBWRAP_SYMS),-Wl,--wrap=_$(s))
   LDFLAGS += -L. -Wl,--start-group -lc -Wl,--end-group
   LDFLAGS += \
-   -T$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env/freedom-e300-hifive1/flash.lds \
+   -T$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee/link.lds \
    -nostartfiles \
-   -L$(MAKEFILE_DIR)/downloads/sifive_fe310_lib/bsp/env \
+   -L$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env \
    --specs=nano.specs
 
 # These are microcontroller-specific rules for converting the ELF output
