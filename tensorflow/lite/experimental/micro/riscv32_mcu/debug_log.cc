@@ -163,7 +163,8 @@ char* FastFloatToBufferLeft(float i, char* buffer) {
 
 }  // namespace
 
-extern "C" void DebugLog(const char* s) { puts(s); }
+//<<JC>> Ugly hack here!!! extern "C" void DebugLog(const char* s) { puts(s); }
+extern "C" void DebugLog(const char* s) { printf("%s", s); }
 
 extern "C" void DebugLogInt32(int32_t i) {
   char number_string[kFastToBufferSize];

@@ -1,14 +1,12 @@
 # Settings for RISCV MCU toolchain.
 ifeq ($(TARGET), riscv32_mcu)
   TARGET_ARCH := riscv32_mcu
-  #<<JC>> TARGET_TOOLCHAIN_PREFIX := riscv64-unknown-elf-
-  TARGET_TOOLCHAIN_PREFIX := riscv-none-embed-
+  TARGET_TOOLCHAIN_PREFIX := riscv64-unknown-elf-
 
   PLATFORM_FLAGS = \
     -march=rv32imac \
     -mabi=ilp32 \
     -mcmodel=medany \
-    -mexplicit-relocs \
     -fno-builtin-printf \
     -fno-exceptions \
     -DTF_LITE_MCU_DEBUG_LOG \
@@ -28,6 +26,7 @@ ifeq ($(TARGET), riscv32_mcu)
     -Wno-sign-compare \
     -fno-delete-null-pointer-checks \
     -fomit-frame-pointer \
+    -static \
     -Os
 
   CXXFLAGS += $(PLATFORM_FLAGS) \
@@ -46,31 +45,22 @@ ifeq ($(TARGET), riscv32_mcu)
     -I$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee
 
   MICROLITE_CC_SRCS += \
-    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.c) \
-    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.cc) \
     $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/misc/write_hex.c \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/stdlib/malloc.c \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/bk_common/crt.S \
+    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/bk_common/syscalls.c \
     $(wildcard tensorflow/lite/experimental/micro/riscv32_mcu/*.cc)
 
-  MICRO_SPEECH_TEST_SRCS += \
-    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.c) \
-    $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.cc) \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/misc/write_hex.c \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/stdlib/malloc.c \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/start.S \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/entry.S \
-    $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee/init.c
+  #<<JC>> MICRO_SPEECH_TEST_SRCS += \
+  #<<JC>>   $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.c) \
+  #<<JC>>   $(wildcard $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/sys/*.cc) \
+  #<<JC>>   $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/misc/write_hex.c \
+  #<<JC>>   $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/libwrap/stdlib/malloc.c \
+  #<<JC>>   $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/start.S \
+  #<<JC>>   $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/entry.S \
+  #<<JC>>   $(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee/init.c
 
-  LIBWRAP_SYMS := malloc free \
-	open lseek read write fstat stat close link unlink \
-	execve fork getpid kill wait \
-	isatty times sbrk _exit puts
-
-  LDFLAGS += $(foreach s,$(LIBWRAP_SYMS),-Wl,--wrap=$(s))
-  LDFLAGS += $(foreach s,$(LIBWRAP_SYMS),-Wl,--wrap=_$(s))
-  LDFLAGS += -L. -Wl,--start-group -lc -Wl,--end-group
   LDFLAGS += \
-   -T$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/sirv-e203-lichee/link.lds \
+   -T$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env/bk_common/test.ld \
    -nostartfiles \
    -L$(MAKEFILE_DIR)/downloads/licheetang_e203_lib/bsp/env \
    --specs=nano.specs

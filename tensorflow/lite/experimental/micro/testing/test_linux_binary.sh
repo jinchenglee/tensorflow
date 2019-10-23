@@ -32,14 +32,18 @@ mkdir -p ${MICRO_LOG_PATH}
 # 1 : stdout
 # 2 : stderr
 #  2>&1 means also print stderr info to stdout.
-$1 2>&1 | tee ${MICRO_LOG_FILENAME}
+if [[ "$1" == "riscv32_mcu" ]]; then
+	spike --isa=rv32imac $2 2>&1 | tee ${MICRO_LOG_FILENAME}
+else
+	$2 2>&1 | tee ${MICRO_LOG_FILENAME}
+fi
 
-if grep -q "$2" ${MICRO_LOG_FILENAME}
+if grep -q "$3" ${MICRO_LOG_FILENAME}
 then
-  echo "$1: PASS"
+  echo "$2: PASS"
   exit 0
 else
-  echo "$1: FAIL - '$2' not found in logs."
+  echo "$2: FAIL - '$3' not found in logs."
   exit 1
 fi
 

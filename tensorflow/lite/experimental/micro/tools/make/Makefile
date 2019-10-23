@@ -34,7 +34,7 @@ INCLUDES := \
 # override local versions in the source tree.
 INCLUDES += -I/usr/local/include
 
-TEST_SCRIPT := tensorflow/lite/experimental/micro/testing/test_linux_binary.sh
+TEST_SCRIPT := tensorflow/lite/experimental/micro/testing/test_linux_binary.sh $(TARGET)
 
 MICROLITE_LIBS := -lm
 
@@ -77,8 +77,8 @@ $(PREPROCESSOR_TEST_SRCS) \
 tensorflow/lite/experimental/micro/examples/micro_speech/fixed_point/preprocessor.cc
 
 MICROLITE_TEST_SRCS := \
-$(wildcard tensorflow/lite/experimental/micro/*test.cc) \
-$(wildcard tensorflow/lite/experimental/micro/kernels/*test.cc)
+$(wildcard tensorflow/lite/experimental/micro/kernels/*test.cc) \
+$(wildcard tensorflow/lite/experimental/micro/*test.cc)
 
 MICROLITE_CC_BASE_SRCS := \
 $(wildcard tensorflow/lite/experimental/micro/*.cc) \
@@ -175,7 +175,7 @@ micro_speech_test: $(MICRO_SPEECH_TEST_BINARY)
 micro_speech_test_bin: $(MICRO_SPEECH_TEST_BINARY).bin
 
 test_micro_speech: $(MICRO_SPEECH_TEST_BINARY)
-	$(TEST_SCRIPT) $(MICRO_SPEECH_TEST_BINARY) '~~~ALL TESTS PASSED~~~'
+	$(TEST_SCRIPT) $(MICRO_SPEECH_TEST_BINARY) 'ALL TESTS PASSED'
 
 $(PREPROCESSOR_REFERENCE_TEST_BINARY): $(PREPROCESSOR_REFERENCE_TEST_OBJS) $(MICROLITE_LIB_PATH)
 	@mkdir -p $(dir $@)
@@ -187,7 +187,7 @@ preprocessor_reference_test: $(PREPROCESSOR_REFERENCE_TEST_BINARY)
 preprocessor_reference_test_bin: $(PREPROCESSOR_REFERENCE_TEST_BINARY).bin
 
 test_preprocessor_reference: $(PREPROCESSOR_REFERENCE_TEST_BINARY)
-	$(TEST_SCRIPT) $(PREPROCESSOR_REFERENCE_TEST_BINARY) '~~~ALL TESTS PASSED~~~'
+	$(TEST_SCRIPT) $(PREPROCESSOR_REFERENCE_TEST_BINARY) 'ALL TESTS PASSED'
 
 $(PREPROCESSOR_FIXED_TEST_BINARY): $(PREPROCESSOR_FIXED_TEST_OBJS) $(MICROLITE_LIB_PATH)
 	@mkdir -p $(dir $@)
@@ -199,7 +199,7 @@ preprocessor_fixed_test: $(PREPROCESSOR_FIXED_TEST_BINARY)
 preprocessor_fixed_test_bin: $(PREPROCESSOR_FIXED_TEST_BINARY).bin
 
 test_preprocessor_fixed: $(PREPROCESSOR_FIXED_TEST_BINARY)
-	$(TEST_SCRIPT) $(PREPROCESSOR_FIXED_TEST_BINARY) '~~~ALL TESTS PASSED~~~'
+	$(TEST_SCRIPT) $(PREPROCESSOR_FIXED_TEST_BINARY) 'ALL TESTS PASSED'
 
 $(BINDIR)%_test : $(OBJDIR)%_test.o $(MICROLITE_LIB_OBJS) $(MICROLITE_LIB_PATH)
 	@mkdir -p $(dir $@)
@@ -208,11 +208,12 @@ $(BINDIR)%_test : $(OBJDIR)%_test.o $(MICROLITE_LIB_OBJS) $(MICROLITE_LIB_PATH)
 	$(LIBFLAGS) $(MICROLITE_LIB_PATH) $(LDFLAGS) $(MICROLITE_LIBS)
 
 $(BINDIR)%.test_target: $(BINDIR)%_test
-	$(TEST_SCRIPT) $< '~~~ALL TESTS PASSED~~~'
+	$(TEST_SCRIPT) $< 'ALL TESTS PASSED'
 
 $(info $(MICROLITE_TEST_TARGETS))
 
-test: test_micro_speech $(MICROLITE_TEST_TARGETS)
+test: $(MICROLITE_TEST_TARGETS) test_micro_speech 
+#<<JC>> test: $(MICROLITE_TEST_TARGETS) 
 
 # Gets rid of all generated files.
 clean:
